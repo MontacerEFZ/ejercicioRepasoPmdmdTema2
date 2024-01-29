@@ -1,6 +1,8 @@
 package montacer.elfazazi.ejerciciorepasopmdmdtema2.adapters;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +17,8 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 import montacer.elfazazi.ejerciciorepasopmdmdtema2.R;
+import montacer.elfazazi.ejerciciorepasopmdmdtema2.activities.RecetaActivity;
+import montacer.elfazazi.ejerciciorepasopmdmdtema2.helpers.Constantes;
 import montacer.elfazazi.ejerciciorepasopmdmdtema2.modelos.Categoria;
 import montacer.elfazazi.ejerciciorepasopmdmdtema2.modelos.Comida;
 import montacer.elfazazi.ejerciciorepasopmdmdtema2.modelos.Comidas;
@@ -55,6 +59,18 @@ public class ComidasAdapter extends RecyclerView.Adapter<ComidasAdapter.ComidasV
                 .placeholder(R.drawable.ic_launcher_background)
                 .error(R.drawable.ic_launcher_background)
                 .into(holder.foto);
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, RecetaActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString(Constantes.IDCOMIDA, comida.getIdMeal());
+                intent.putExtras(bundle);
+
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override

@@ -13,4 +13,7 @@ public interface ApiConexiones {
 
     @GET("/api/json/v1/1/filter.php")
     Call<Comidas> getComidas(@Query("c") String categoria);
+
+    @GET("/api/json/v1/1/lookup.php")
+    Call<Comidas> getRecetas(@Query("i") String id);
 }
