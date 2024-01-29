@@ -1,10 +1,17 @@
 package montacer.elfazazi.ejerciciorepasopmdmdtema2.activities;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.squareup.picasso.Picasso;
 
 import java.net.HttpURLConnection;
@@ -26,6 +33,7 @@ import retrofit2.Response;
 public class RecetaActivity extends AppCompatActivity {
     ActivityRecetaBinding binding;
     private Comida comida;
+    private FirebaseUser user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +45,19 @@ public class RecetaActivity extends AppCompatActivity {
         if (id != null){
             cargarReceta(id);
         }
+
+        binding.brnGuardarReceta.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                user = FirebaseAuth.getInstance().getCurrentUser();
+                if (user != null) {
+
+
+                }else{
+                    startActivity(new Intent(RecetaActivity.this, LoginActivity.class));
+                }
+            }
+        });
     }
 
     private void cargarReceta(String id) {
@@ -72,5 +93,21 @@ public class RecetaActivity extends AppCompatActivity {
                 .placeholder(R.drawable.ic_launcher_background)
                 .error(R.drawable.ic_launcher_background)
                 .into(binding.imFotoReceta);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+         super.onCreateOptionsMenu(menu);
+         getMenuInflater().inflate(R.menu.menu_logout, menu);
+         return  true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+         super.onOptionsItemSelected(item);
+         if (item.getItemId() == R.id.logoutMenu){
+             FirebaseAuth.getInstance().signOut();
+         }
+         return true;
     }
 }
