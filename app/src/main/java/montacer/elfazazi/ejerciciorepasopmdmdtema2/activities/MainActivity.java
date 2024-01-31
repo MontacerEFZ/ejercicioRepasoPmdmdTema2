@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void cargarCategorias() {
-        Call<Categorias> getCategorias = api.getCategorias();
+        Call<Categorias> getCategorias = api.getCategorias(); //revisamos el json de la api y <Categorias> es lo q devolvera
 
         getCategorias.enqueue(new Callback<Categorias>() {
             @Override

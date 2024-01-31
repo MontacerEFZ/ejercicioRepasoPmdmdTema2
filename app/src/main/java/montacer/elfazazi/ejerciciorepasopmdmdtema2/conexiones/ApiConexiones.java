@@ -9,10 +9,10 @@ import retrofit2.http.Query;
 
 public interface ApiConexiones {
     @GET("/api/json/v1/1/categories.php")
-    Call<Categorias> getCategorias();
+    Call<Categorias> getCategorias(); //<Categorias> revisamos json de la api y es lo q devolvera
 
     @GET("/api/json/v1/1/filter.php")
-    Call<Comidas> getComidas(@Query("c") String categoria);
+    Call<Comidas> getComidas(@Query("c") String categoria); //la c es un parametro q hay q pasarle un valor
 
     @GET("/api/json/v1/1/lookup.php")
     Call<Comidas> getRecetas(@Query("i") String id);
