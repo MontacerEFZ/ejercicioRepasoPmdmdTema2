@@ -51,9 +51,9 @@ public class RecetaActivity extends AppCompatActivity {
             public void onClick(View v) {
                 user = FirebaseAuth.getInstance().getCurrentUser();
                 if (user != null) {
+                    //esta logeado
 
-
-                }else{
+                }else{ //no esta logeado
                     startActivity(new Intent(RecetaActivity.this, LoginActivity.class));
                 }
             }
