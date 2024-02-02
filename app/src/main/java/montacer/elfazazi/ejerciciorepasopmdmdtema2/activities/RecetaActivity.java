@@ -4,14 +4,22 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.Firebase;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.squareup.picasso.Picasso;
 
 import java.net.HttpURLConnection;
@@ -34,12 +42,21 @@ public class RecetaActivity extends AppCompatActivity {
     ActivityRecetaBinding binding;
     private Comida comida;
     private FirebaseUser user;
+    private FirebaseDatabase database;
+    private DatabaseReference reference;
+    private ArrayList<Comida> listaComidas;
+    private SharedPreferences sp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityRecetaBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        listaComidas = new ArrayList<>();
+        database = FirebaseDatabase.getInstance("https://ejemplofirebasebpmdmtema2-default-rtdb.europe-west1.firebasedatabase.app/");
+
+        sp = getSharedPreferences(Constantes.ULTIMA_RECETA, MODE_PRIVATE);
 
         String id = getIntent().getExtras().getString(Constantes.IDCOMIDA);
         if (id != null){
@@ -51,7 +68,36 @@ public class RecetaActivity extends AppCompatActivity {
             public void onClick(View v) {
                 user = FirebaseAuth.getInstance().getCurrentUser();
                 if (user != null) {
-                    //esta logeado
+                    //esta logeado:
+                    SharedPreferences.Editor editor = sp.edit();
+                    editor.putString(Constantes.EMAIL, user.getEmail()); //clave, valor
+                    editor.putString(Constantes.RECETA, comida.getStrMeal());
+                    editor.apply();
+
+                        reference = database.getReference(user.getUid()).child("recetas");
+                            //estamos cogiendo la referencia del nodo del usuario con el .getUid y añadiendole con el .child una lista llamada "recetas"
+                                //entonces la referencia acaba siendo esa lista "recetas"
+
+                    reference.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+                        //con el .get() "escucha" solo 1 vez, para escuchar constantemente seria .addValueEventListener
+                        @Override
+                        public void onComplete(@NonNull Task<DataSnapshot> task) {
+                            if (task.isSuccessful()){
+                                //si fuesemos a recoger solo un String o int (datos primitivos) pondriamos String.class y lo recogeriamos
+                                //pero como es una lista, hay q usar un GenericTypeIndicator
+                                GenericTypeIndicator<ArrayList<Comida>> gti = new GenericTypeIndicator<ArrayList<Comida>>() {};
+                                ArrayList<Comida> temp = task.getResult().getValue(gti);
+                                if (temp != null){
+                                    listaComidas.addAll(temp);
+                                }
+
+                                //escribir en la bd:
+                                listaComidas.add(comida);
+                                reference.setValue(listaComidas);
+                                Toast.makeText(RecetaActivity.this, "guardado", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
 
                 }else{ //no esta logeado
                     startActivity(new Intent(RecetaActivity.this, LoginActivity.class));

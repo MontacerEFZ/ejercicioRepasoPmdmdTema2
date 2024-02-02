@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -15,6 +16,7 @@ import montacer.elfazazi.ejerciciorepasopmdmdtema2.adapters.CategoriasAdapter;
 import montacer.elfazazi.ejerciciorepasopmdmdtema2.conexiones.ApiConexiones;
 import montacer.elfazazi.ejerciciorepasopmdmdtema2.conexiones.RetrofitObject;
 import montacer.elfazazi.ejerciciorepasopmdmdtema2.databinding.ActivityMainBinding;
+import montacer.elfazazi.ejerciciorepasopmdmdtema2.helpers.Constantes;
 import montacer.elfazazi.ejerciciorepasopmdmdtema2.modelos.Categoria;
 import montacer.elfazazi.ejerciciorepasopmdmdtema2.modelos.Categorias;
 import retrofit2.Call;
@@ -31,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Retrofit retrofit;
     private ApiConexiones api;
+    private SharedPreferences spMain;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +43,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         listaCategorias = new ArrayList<>();
+
+        spMain = getSharedPreferences(Constantes.ULTIMA_RECETA, MODE_PRIVATE);
+        verUltimoAcceso();
+
         adapter = new CategoriasAdapter(R.layout.row_view_holder, listaCategorias, this);
         lm = new LinearLayoutManager(this);
 
@@ -50,6 +57,13 @@ public class MainActivity extends AppCompatActivity {
         api = retrofit.create(ApiConexiones.class);
 
         cargarCategorias();
+    }
+
+    private void verUltimoAcceso() {
+        String email = spMain.getString(Constantes.EMAIL, "");
+        String receta = spMain.getString(Constantes.RECETA, "");
+
+        Toast.makeText(this, "email:" +email+ " receta: "+receta, Toast.LENGTH_SHORT).show();
     }
 
     private void cargarCategorias() {
